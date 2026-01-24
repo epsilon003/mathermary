@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Adventures - Adaptive Learning</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen">
+            <div class="header">
+                <div class="logo"><img src="logo.jpg" alt="3.141591" style="width:60px; height:60px; border-radius: 100%"></div>
+                <h1>Mathventures</h1>
+                <p class="subtitle">AI-Powered Adaptive Learning</p>
+            </div>
+
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" id="userName" placeholder="Enter your name">
+            </div>
+
+            <div class="form-group">
+                <label>Starting Difficulty</label>
+                <div class="difficulty-buttons">
+                    <button class="diff-btn active" onclick="selectDifficulty(0)">Easy</button>
+                    <button class="diff-btn" onclick="selectDifficulty(1)">Medium</button>
+                    <button class="diff-btn" onclick="selectDifficulty(2)">Hard</button>
+                </div>
+            </div>
+
+            <button class="primary-btn" onclick="startGame()">Start Adventure!</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="hidden">
+            <div class="progress-info">
+                <span class="info-text">Player: <span id="playerName"></span></span>
+                <span class="info-text">Progress: <span id="progressText"></span></span>
+                <span id="difficultyBadge"></span>
+            </div>
+
+            <div id="feedbackArea"></div>
+
+            <div id="puzzleArea" class="puzzle-display">
+                <div class="puzzle-text" id="puzzleText"></div>
+                <input type="number" id="answerInput" class="answer-input" placeholder="?">
+                <button class="primary-btn" onclick="submitAnswer()">Submit Answer</button>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-label">Correct</div>
+                    <div class="stat-value stat-correct" id="correctCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Incorrect</div>
+                    <div class="stat-value stat-incorrect" id="incorrectCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Accuracy</div>
+                    <div class="stat-value stat-accuracy" id="accuracyPercent">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Screen -->
+        <div id="summaryScreen" class="hidden">
+            <div class="header">
+                <div class="trophy">🏆</div>
+                <h1>Great Job, <span id="summaryName"></span>!</h1>
+                <p class="subtitle">Here's how you did</p>
+            </div>
+
+            <!-- Accuracy Circle Progress -->
+            <div class="circle-progress-container">
+                <svg class="circle-progress" width="200" height="200">
+                    <circle class="circle-bg" cx="100" cy="100" r="85"></circle>
+                    <circle class="circle-fill" id="accuracyCircle" cx="100" cy="100" r="85"></circle>
+                    <text x="100" y="95" class="circle-text-large" id="circleAccuracy">0%</text>
+                    <text x="100" y="115" class="circle-text-small">Accuracy</text>
+                </svg>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card card-green">
+                    <div class="card-label">Correct Answers</div>
+                    <div class="card-value" id="finalScore">0/10</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-correct" id="correctBar"></div>
+                    </div>
+                </div>
+                <div class="summary-card card-gold">
+                    <div class="card-label">Avg Time</div>
+                    <div class="card-value" id="avgTime">0s</div>
+                    <div class="time-indicator">
+                        <div class="time-bar" id="timeBar"></div>
+                    </div>
+                </div>
+                <div class="summary-card card-olive">
+                    <div class="card-label">Final Level</div>
+                    <div class="card-value card-value-small" id="finalLevel">Easy</div>
+                    <div class="difficulty-dots">
+                        <span class="dot" id="dot1"></span>
+                        <span class="dot" id="dot2"></span>
+                        <span class="dot" id="dot3"></span>
+                    </div>
+                </div>
+                <div class="summary-card card-gold">
+                    <div class="card-label">Total Score</div>
+                    <div class="card-value" id="finalAccuracy">0%</div>
+                    <div class="star-rating" id="starRating"></div>
+                </div>
+            </div>
+
+            <div class="recommendation">
+                <p class="recommendation-text">Recommended: Start your next session at <strong id="recommendedLevel">Easy</strong> level</p>
+            </div>
+
+            <button class="primary-btn" onclick="restartGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

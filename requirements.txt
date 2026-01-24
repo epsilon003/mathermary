@@ -1,0 +1,16 @@
+# Math Adventures - Adaptive Learning System
+# Python Dependencies
+
+# No external dependencies required for core functionality
+# The system uses only Python standard library
+
+# Optional: For enhanced features (uncomment if needed)
+# numpy>=1.21.0  # For advanced statistics
+# pandas>=1.3.0  # For data analysis
+# matplotlib>=3.4.0  # For visualization
+# scikit-learn>=0.24.0  # For ML-based adaptive engine (future enhancement)
+
+# Development dependencies
+# pytest>=6.2.0  # For testing
+# black>=21.0  # For code formatting
+# flake8>=3.9.0  # For linting
