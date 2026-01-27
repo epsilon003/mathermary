@@ -129,6 +129,13 @@ input[type="number"]:focus {
     transform: translateY(-2px);
 }
 
+.input-hint {
+    font-size: 0.85em;
+    color: var(--color-olive);
+    margin-top: 5px;
+    font-style: italic;
+}
+
 /* Difficulty Buttons */
 .difficulty-buttons {
     display: grid;
@@ -549,6 +556,199 @@ input[type="number"]:focus {
 /* Utility Classes */
 .hidden {
     display: none;
+}
+
+/* Google Sign-In Styles */
+.google-signin-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-family: 'Roboto', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #3c4043;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+        
+.google-signin-btn:hover {
+    background: #f8f9fa;
+    border-color: #d2d3d4;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+        
+.google-signin-btn:active {
+    background: #f1f3f4;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+        
+.google-signin-btn svg {
+    flex-shrink: 0;
+}
+.auth-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f8f8, #e8e8e8);
+    border-radius: 15px;
+}
+
+.google-signin-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.auth-message {
+    color: var(--color-olive);
+    font-size: 0.9em;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: linear-gradient(135deg, #e8f0d8, #d5e5b8);
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.user-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid var(--color-gold);
+}
+
+.user-details {
+    flex: 1;
+    text-align: left;
+}
+
+.user-name-display {
+    font-weight: bold;
+    color: var(--color-text-dark);
+    margin: 0 0 5px 0;
+}
+
+.user-rating {
+    color: var(--color-olive);
+    font-size: 0.9em;
+    margin: 0;
+}
+
+.sign-out-btn {
+    padding: 8px 16px;
+    background: white;
+    border: 2px solid var(--color-olive);
+    border-radius: 10px;
+    color: var(--color-olive);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sign-out-btn:hover {
+    background: var(--color-olive);
+    color: white;
+}
+
+/* Leaderboard Preview */
+.leaderboard-preview {
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #fff4cc, #ffe699);
+    border-radius: 15px;
+}
+
+.leaderboard-preview h3 {
+    color: var(--color-text-dark);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.leaderboard-rank {
+    width: 30px;
+    height: 30px;
+    background: var(--color-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.leaderboard-photo {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid var(--color-gold);
+}
+
+.leaderboard-initial {
+    background: linear-gradient(135deg, var(--color-gold), var(--color-olive));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.leaderboard-info {
+    flex: 1;
+}
+
+.leaderboard-name {
+    font-weight: 600;
+    color: var(--color-text-dark);
+    margin: 0;
+}
+
+.leaderboard-rating {
+    font-size: 0.9em;
+    color: var(--color-olive);
+}
+
+/* Rating Change Indicator */
+.rating-change {
+    margin-top: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.rating-up {
+    color: #32cd32;
+}
+
+.rating-down {
+    color: #ee5a24;
+}
+
+.rating-neutral {
+    color: var(--color-gold);
 }
 
 /* Animations */
