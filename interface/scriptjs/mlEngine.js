@@ -1,21 +1,108 @@
 /**
- * Machine Learning Adaptive Engine
- * TensorFlow.js-based difficulty adjustment
+ * Machine Learning Adaptive Engine - Mobile-Friendly Version
+ * TensorFlow.js-based difficulty adjustment with mobile optimization
  */
 
 /**
- * Initialize and train the ML model
+ * Initialize and train the ML model with mobile detection and timeout
  */
 async function initializeMLModel() {
     console.log('Initializing ML model...');
     
-    // Create a simple neural network
+    // Detect if mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    // Set timeout based on device (mobile gets less time)
+    const timeoutDuration = isMobile ? 8000 : 15000; // 8s mobile, 15s desktop
+    
+    console.log(`Device: ${isMobile ? 'Mobile' : 'Desktop'}, Timeout: ${timeoutDuration}ms`);
+    
+    // Create timeout promise
+    const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('ML initialization timeout')), timeoutDuration)
+    );
+    
+    try {
+        // Race between ML initialization and timeout
+        await Promise.race([
+            actuallyInitializeML(isMobile),
+            timeout
+        ]);
+        
+        modelTrained = true;
+        console.log('ML model trained successfully!');
+        
+    } catch (error) {
+        console.warn('ML model initialization failed or timed out, using rule-based system:', error.message);
+        modelTrained = false; // Will use rule-based fallback
+        
+        // Clean up any partial TensorFlow resources
+        if (typeof tf !== 'undefined') {
+            try {
+                tf.disposeVariables();
+            } catch (e) {
+                console.log('TF cleanup skipped');
+            }
+        }
+    }
+}
+
+/**
+ * Actually initialize the ML model (separated for timeout handling)
+ */
+async function actuallyInitializeML(isMobile = false) {
+    // Check if TensorFlow is available
+    if (typeof tf === 'undefined') {
+        throw new Error('TensorFlow.js not loaded');
+    }
+    
+    // Set backend based on device
+    if (isMobile) {
+        // Use CPU backend for mobile (more reliable)
+        await tf.setBackend('cpu');
+        console.log('Using CPU backend for mobile');
+    } else {
+        // Desktop can try WebGL first, fallback to CPU
+        try {
+            await tf.setBackend('webgl');
+            console.log('Using WebGL backend');
+        } catch (e) {
+            await tf.setBackend('cpu');
+            console.log('Fallback to CPU backend');
+        }
+    }
+    
+    await tf.ready();
+    
+    // Create a simpler neural network for mobile
+    const layerConfig = isMobile ? {
+        // Simpler model for mobile
+        layer1Units: 8,
+        layer2Units: 4,
+        dropout: 0.1
+    } : {
+        // Full model for desktop
+        layer1Units: 16,
+        layer2Units: 8,
+        dropout: 0.2
+    };
+    
     adaptiveModel = tf.sequential({
         layers: [
-            tf.layers.dense({ inputShape: [5], units: 16, activation: 'relu' }),
-            tf.layers.dropout({ rate: 0.2 }),
-            tf.layers.dense({ units: 8, activation: 'relu' }),
-            tf.layers.dense({ units: 3, activation: 'softmax' })
+            tf.layers.dense({ 
+                inputShape: [5], 
+                units: layerConfig.layer1Units, 
+                activation: 'relu' 
+            }),
+            tf.layers.dropout({ rate: layerConfig.dropout }),
+            tf.layers.dense({ 
+                units: layerConfig.layer2Units, 
+                activation: 'relu' 
+            }),
+            tf.layers.dense({ 
+                units: 3, 
+                activation: 'softmax' 
+            })
         ]
     });
 
@@ -25,17 +112,22 @@ async function initializeMLModel() {
         metrics: ['accuracy']
     });
 
-    // Generate synthetic training data
-    const trainingData = generateTrainingData(500);
+    // Reduce training data for mobile
+    const numSamples = isMobile ? 250 : 500;
+    const trainingData = generateTrainingData(numSamples);
     
     const xs = tf.tensor2d(trainingData.features);
     const ys = tf.tensor2d(trainingData.labels);
 
-    // Train the model
-    console.log('Training ML model...');
+    // Train the model with fewer epochs on mobile
+    const epochs = isMobile ? 30 : 50;
+    const batchSize = isMobile ? 64 : 32;
+    
+    console.log(`Training with ${numSamples} samples, ${epochs} epochs, batch size ${batchSize}`);
+    
     await adaptiveModel.fit(xs, ys, {
-        epochs: 50,
-        batchSize: 32,
+        epochs: epochs,
+        batchSize: batchSize,
         shuffle: true,
         verbose: 0,
         callbacks: {
@@ -47,11 +139,9 @@ async function initializeMLModel() {
         }
     });
 
+    // Clean up training tensors
     xs.dispose();
     ys.dispose();
-
-    modelTrained = true;
-    console.log('ML model trained successfully!');
 }
 
 /**
@@ -103,35 +193,42 @@ async function calculateNextDifficultyML(currentDiff, perfHistory) {
         return calculateNextDifficultyRuleBased(currentDiff, perfHistory);
     }
 
-    const recent = perfHistory.slice(-3);
-    const recentAccuracy = recent.filter(p => p.correct).length / recent.length;
-    const avgTime = recent.reduce((sum, p) => sum + p.time, 0) / recent.length;
-    
-    let correctStreak = 0;
-    for (let i = perfHistory.length - 1; i >= 0; i--) {
-        if (perfHistory[i].correct) correctStreak++;
-        else break;
+    try {
+        const recent = perfHistory.slice(-3);
+        const recentAccuracy = recent.filter(p => p.correct).length / recent.length;
+        const avgTime = recent.reduce((sum, p) => sum + p.time, 0) / recent.length;
+        
+        let correctStreak = 0;
+        for (let i = perfHistory.length - 1; i >= 0; i--) {
+            if (perfHistory[i].correct) correctStreak++;
+            else break;
+        }
+
+        const features = tf.tensor2d([[
+            recentAccuracy,
+            avgTime / 15000,
+            currentDiff / 2,
+            Math.min(correctStreak / 5, 1),
+            Math.min(perfHistory.length / 10, 1)
+        ]]);
+
+        const prediction = adaptiveModel.predict(features);
+        const predictionData = await prediction.data();
+        
+        const predictedDiff = predictionData.indexOf(Math.max(...predictionData));
+
+        // Clean up tensors
+        features.dispose();
+        prediction.dispose();
+
+        console.log(`ML Prediction: Current=${currentDiff}, Predicted=${predictedDiff}, Probabilities=[${predictionData.map(p => p.toFixed(2)).join(', ')}]`);
+
+        return predictedDiff;
+        
+    } catch (error) {
+        console.warn('ML prediction error, using rule-based fallback:', error);
+        return calculateNextDifficultyRuleBased(currentDiff, perfHistory);
     }
-
-    const features = tf.tensor2d([[
-        recentAccuracy,
-        avgTime / 15000,
-        currentDiff / 2,
-        Math.min(correctStreak / 5, 1),
-        Math.min(perfHistory.length / 10, 1)
-    ]]);
-
-    const prediction = adaptiveModel.predict(features);
-    const predictionData = await prediction.data();
-    
-    const predictedDiff = predictionData.indexOf(Math.max(...predictionData));
-
-    features.dispose();
-    prediction.dispose();
-
-    console.log(`ML Prediction: Current=${currentDiff}, Predicted=${predictedDiff}, Probabilities=[${predictionData.map(p => p.toFixed(2)).join(', ')}]`);
-
-    return predictedDiff;
 }
 
 /**
@@ -154,7 +251,11 @@ function calculateNextDifficultyRuleBased(currentDiff, perfHistory) {
         score = -1;
     }
 
-    return Math.max(0, Math.min(2, currentDiff + score));
+    const nextDiff = Math.max(0, Math.min(2, currentDiff + score));
+    
+    console.log(`Rule-based: Current=${currentDiff}, Next=${nextDiff}, Accuracy=${(recentAccuracy*100).toFixed(0)}%, Time=${(avgTime/1000).toFixed(1)}s`);
+    
+    return nextDiff;
 }
 
 /**
