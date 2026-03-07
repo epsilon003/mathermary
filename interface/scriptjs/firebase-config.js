@@ -1,11 +1,11 @@
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDef_4Dq31F7VtC9FfgxelVYCXlHR2K_vE",
-  authDomain: "mathventures-ecd30.firebaseapp.com",
-  projectId: "mathventures-ecd30",
-  storageBucket: "mathventures-ecd30.firebasestorage.app",
-  messagingSenderId: "1047692077774",
-  appId: "1:1047692077774:web:0dac496782c4f204d2fe9f"
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
